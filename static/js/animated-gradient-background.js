@@ -4,13 +4,13 @@
  */
 (function () {
   const DEFAULT_COLORS = [
-    '#0A0A0A',
-    '#2979FF',
-    '#FF80AB',
-    '#FF6D00',
-    '#FFD600',
-    '#00E676',
-    '#3D5AFE',
+    '#0f0a1a',
+    '#2e1065',
+    '#7c3aed',
+    '#a855f7',
+    '#c084fc',
+    '#9333ea',
+    '#0f0a1a',
   ];
   const DEFAULT_STOPS = [35, 50, 60, 70, 80, 90, 100];
 

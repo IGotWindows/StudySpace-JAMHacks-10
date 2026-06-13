@@ -1,12 +1,12 @@
 .bg-gradient-animation {
-  --gradient-background-start: rgb(15, 23, 42);
-  --gradient-background-end: rgb(0, 17, 82);
-  --first-color: 59, 130, 246;
-  --second-color: 99, 102, 241;
-  --third-color: 56, 189, 248;
-  --fourth-color: 129, 140, 248;
-  --fifth-color: 37, 99, 235;
-  --pointer-color: 96, 165, 250;
+  --gradient-background-start: rgb(30, 10, 55);
+  --gradient-background-end: rgb(12, 4, 32);
+  --first-color: 168, 85, 247;
+  --second-color: 139, 92, 246;
+  --third-color: 192, 132, 252;
+  --fourth-color: 124, 58, 237;
+  --fifth-color: 217, 70, 239;
+  --pointer-color: 167, 139, 250;
   --size: 80%;
   --blending-value: hard-light;
 

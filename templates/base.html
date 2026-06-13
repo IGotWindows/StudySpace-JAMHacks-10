@@ -11,7 +11,7 @@
 </head>
 <body>
   <nav class="nav">
-    <a class="logo" href="{{ url_for('home') }}">Studious</a>
+    <a class="logo" href="{{ url_for('home') }}">Studious_Nga</a>
     <div class="links">
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('education') }}" class="{% if request.endpoint in ['education', 'focus', 'study', 'grades'] %}active{% endif %}">Education</a>

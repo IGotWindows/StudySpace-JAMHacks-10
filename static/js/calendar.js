@@ -155,7 +155,8 @@ function initCalendar() {
             list.className = "day-events";
             events.slice(0, 2).forEach((event) => {
               const item = document.createElement("li");
-              item.textContent = formatEventLabel(event);
+              item.className = "day-event-item";
+              appendEventLabelElements(item, event);
               list.appendChild(item);
             });
             if (events.length > 2) {

@@ -8,21 +8,21 @@
       <p class="page-subtitle">Your home base for wellness, scheduling, and school tools — everything in one place.</p>
     </div>
 
-    <div class="quick-links">
+    <div class="quick-links dashboard-links">
+      <a class="quick-link card" href="{{ url_for('education') }}">
+        <span class="quick-link-icon">🎓</span>
+        <h2>Education</h2>
+        <p>Focus sessions, flashcards, and grade planning in one spot.</p>
+      </a>
       <a class="quick-link card" href="{{ url_for('health') }}">
         <span class="quick-link-icon">💚</span>
         <h2>Health</h2>
         <p>Track sleep, hydration, and mood. See how wellness shapes your focus.</p>
       </a>
-      <a class="quick-link card" href="{{ url_for('calendar_page') }}">
+      <a class="quick-link card quick-link-wide" href="{{ url_for('calendar_page') }}">
         <span class="quick-link-icon">📅</span>
         <h2>Calendar</h2>
         <p>Plan assignments, tests, and activities — all saved to your schedule.</p>
-      </a>
-      <a class="quick-link card" href="{{ url_for('education') }}">
-        <span class="quick-link-icon">🎓</span>
-        <h2>Education</h2>
-        <p>Focus sessions, flashcards, and grade planning in one spot.</p>
       </a>
     </div>
   </section>

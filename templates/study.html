@@ -1,16 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Study{% endblock %}
+{% block title %}Study — Studious{% endblock %}
 {% block content %}
-<h1>Study Tools</h1>
+<h1 class="page-title">Study Tools</h1>
+<p class="page-subtitle">Create flashcards and review them before your next test.</p>
+
 <div class="card">
   <h2>Create Flashcard</h2>
-  <input id="question" placeholder="Question">
-  <input id="answer" placeholder="Answer">
+  <input id="question" type="text" placeholder="Question">
+  <input id="answer" type="text" placeholder="Answer">
   <button class="btn primary" onclick="addFlashcard()">Add Flashcard</button>
 </div>
 
 <div class="card">
   <h2>Your Flashcards</h2>
-  <ul id="flashcard-list"></ul>
+  <ul id="flashcard-list" class="flashcard-list"></ul>
+  <p id="no-flashcards" class="empty-state">No flashcards yet. Add one above.</p>
 </div>
 {% endblock %}

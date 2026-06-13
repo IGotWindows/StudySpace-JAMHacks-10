@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Studious{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+  <section class="dashboard-main">
+    <div class="hero dashboard-hero">
+      <h1>Study smarter, not longer.</h1>
+      <p>Track your focus, manage your schedule, and review with flashcards — all in one place.</p>
+    </div>
+
+    <div class="quick-links">
+      <a class="quick-link card" href="{{ url_for('focus') }}">
+        <span class="quick-link-icon">⏱</span>
+        <h2>Focus</h2>
+        <p>Pomodoro timer and webcam check-in for deep work sessions.</p>
+      </a>
+      <a class="quick-link card" href="{{ url_for('study') }}">
+        <span class="quick-link-icon">📚</span>
+        <h2>Study</h2>
+        <p>Build and review flashcards for your next exam.</p>
+      </a>
+      <a class="quick-link card" href="{{ url_for('calendar_page') }}">
+        <span class="quick-link-icon">📅</span>
+        <h2>Calendar</h2>
+        <p>Add assignments, tests, and activities by day.</p>
+      </a>
+      <a class="quick-link card" href="{{ url_for('education') }}">
+        <span class="quick-link-icon">🎓</span>
+        <h2>Education</h2>
+        <p>Browse all learning tools in one spot.</p>
+      </a>
+    </div>
+  </section>
+
+  <aside class="upcoming-sidebar card">
+    <h2>This Week</h2>
+    <ul id="upcoming-events-list" class="upcoming-events-list"></ul>
+    <p id="no-upcoming-events" class="no-upcoming-events hidden">No events left this week. Add some on the calendar.</p>
+    <a class="btn secondary upcoming-calendar-link" href="{{ url_for('calendar_page') }}">View Calendar</a>
+  </aside>
+</div>
+
+<script id="calendar-init-data" type="application/json">{{ calendar_json|safe }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar-events.js') }}"></script>
+<script src="{{ url_for('static', filename='js/upcoming-events.js') }}"></script>
+{% endblock %}

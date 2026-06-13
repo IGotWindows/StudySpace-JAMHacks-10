@@ -73,14 +73,17 @@ function addFlashcard() {
   if (!question || !answer || !list) return;
   if (!question.value.trim() || !answer.value.trim()) return;
 
-  flashcards.push({ question: question.value, answer: answer.value });
+  const q = question.value.trim();
+  const a = answer.value.trim();
+  flashcards.push({ question: q, answer: a });
 
   const li = document.createElement("li");
-  li.textContent = `${question.value} — ${answer.value}`;
+  li.textContent = `${q} — ${a}`;
   list.appendChild(li);
 
   question.value = "";
   answer.value = "";
+  question.focus();
 }
 
 updateTimer();

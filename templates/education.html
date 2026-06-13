@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Education{% endblock %}
+{% block title %}Education — Studious{% endblock %}
 {% block content %}
 <section class="hero">
   <h1>Education</h1>
   <p>Choose a tool to help you learn and stay on track.</p>
   <div class="hero-buttons">
-    <a class="btn primary" href="/focus">Focus</a>
-    <a class="btn secondary" href="/study">Study</a>
+    <a class="btn primary" href="{{ url_for('focus') }}">Focus Session</a>
+    <a class="btn secondary" href="{{ url_for('study') }}">Study Tools</a>
   </div>
 </section>
 {% endblock %}

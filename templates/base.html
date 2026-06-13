@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}FocusFlow{% endblock %}</title>
+  <title>{% block title %}Studious{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
   <nav class="nav">
-    <div class="logo">Studious_Nga (change later)</div> <!-- Change logo name later -->
+    <a class="logo" href="{{ url_for('home') }}">Studious</a>
     <div class="links">
-      <a href="/">Home</a>
-      <a href="/education">Education</a>
-      <a href="/calendar">Calendar</a>
+      <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Dashboard</a>
+      <a href="{{ url_for('education') }}" class="{% if request.endpoint == 'education' %}active{% endif %}">Education</a>
+      <a href="{{ url_for('calendar_page') }}" class="{% if request.endpoint == 'calendar_page' %}active{% endif %}">Calendar</a>
     </div>
   </nav>
 

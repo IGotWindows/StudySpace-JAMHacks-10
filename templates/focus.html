@@ -1,7 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Focus{% endblock %}
+{% block title %}Focus — Studious{% endblock %}
 {% block content %}
-<h1>Focus Session</h1>
+<h1 class="page-title">Focus Session</h1>
+<p class="page-subtitle">Use the Pomodoro timer to stay on task. Optional webcam preview for accountability.</p>
+
 <div class="focus-grid">
   <div class="card">
     <h2>Pomodoro Timer</h2>
@@ -14,8 +16,8 @@
 
   <div class="card">
     <h2>Webcam Preview</h2>
-    <video id="cam" autoplay playsinline></video>
-    <p id="status">Camera not started.</p>
+    <video id="cam" autoplay playsinline muted></video>
+    <p id="status" class="status-text">Camera not started.</p>
     <div class="hero-buttons">
       <button class="btn primary" onclick="startCamera()">Start Camera</button>
       <button class="btn secondary" onclick="closeCamera()">Close Camera</button>

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Calendar{% endblock %}
+{% block title %}Calendar — Studious{% endblock %}
 {% block content %}
-<h1>High School Calendar</h1>
-<p class="calendar-subtitle">Click a day to view, edit, or add events. Use the arrows to change months.</p>
+<h1 class="page-title">Calendar</h1>
+<p class="page-subtitle">Click a day to view, edit, or add events. Use the arrows to change months.</p>
 
 <div class="card calendar-card">
   <div class="calendar-toolbar">
@@ -46,20 +46,6 @@
     </div>
     <button type="button" id="add-event-btn" class="btn primary">Add Event</button>
   </div>
-</div>
-
-<!-- ============================================================
-     EDIT DESCRIPTION HERE
-     Change the text inside the <p class="calendar-description"> tag below.
-     File: templates/calendar.html
-     ============================================================ -->
-<div class="card calendar-description-card">
-  <h2>About This Calendar</h2>
-  <p class="calendar-description">
-    This is a sample calendar for a high school student. Click any day to add your own
-    events with a start and end time, remove items you don't need, and browse between
-    months. Your changes are saved automatically in your browser.
-  </p>
 </div>
 
 <script id="calendar-init-data" type="application/json">{{ calendar_json|safe }}</script>

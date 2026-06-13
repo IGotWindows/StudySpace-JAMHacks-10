@@ -1,103 +1,217 @@
 {% extends "base.html" %}
 {% block title %}Health — Study Space{% endblock %}
 {% block content %}
-<h1 class="page-title">Health</h1>
-<p class="health-greeting" id="user-greeting">Good morning.</p>
 
-<div class="score-container">
-  <div class="score-box">
-    <h2>Wellness Score</h2>
-    <div class="score-display" id="combined-score">0<span class="score-unit">/100</span></div>
-  </div>
-  <div class="streak-box">
-    <h2>Logging Streak</h2>
-    <div class="streak-display" id="streak-count">0 days</div>
-  </div>
-</div>
+<div class="health-page">
 
-<div class="tiles-section">
-  <h2>Today at a Glance</h2>
-  <div class="tiles-grid">
-    <div class="tile">
-      <div class="tile-header">Study Time</div>
-      <div class="tile-value" id="tile-study">0<span class="tile-unit">min</span></div>
-      <div class="tile-sessions" id="tile-sessions">0 sessions</div>
-      <a href="{{ url_for('focus') }}" class="tile-btn tile-btn-session">Start Session</a>
+  <div class="health-header">
+    <div>
+      <h1 class="page-title">Health Hub</h1>
+      <p class="health-tagline" id="health-greeting">Tracking your wellbeing.</p>
     </div>
-
-    <div class="tile">
-      <div class="tile-header">Sleep</div>
-      <div class="tile-value" id="tile-sleep">0<span class="tile-unit">hrs</span></div>
-      <div class="tile-sessions">Last night</div>
-      <button class="tile-btn" onclick="logWellnessModal('sleep')">Log Sleep</button>
-    </div>
-
-    <div class="tile">
-      <div class="tile-header">Water</div>
-      <div class="tile-value" id="tile-water">0<span class="tile-unit">glasses</span></div>
-      <div class="tile-sessions">Today</div>
-      <button class="tile-btn" onclick="quickAddWater()">+ 1 Glass</button>
-    </div>
-
-    <div class="tile">
-      <div class="tile-header">Mood</div>
-      <div class="tile-mood" id="tile-mood">😐</div>
-      <div class="tile-sessions">How are you feeling?</div>
-      <button class="tile-btn" onclick="logWellnessModal('mood')">Update Mood</button>
-    </div>
-  </div>
-</div>
-
-<div class="insights-section">
-  <h2>Your Patterns</h2>
-
-  <div class="insight-card" id="insight-sleep">
-    <div class="insight-icon">😴</div>
-    <div class="insight-content">
-      <h3>Sleep & Focus</h3>
-      <p id="insight-sleep-text">Log sleep to see how rest affects your focus.</p>
+    <div class="health-streak-badge">
+      <span>🔥</span>
+      <span id="health-streak-num">0</span>
+      <span class="streak-label">day streak</span>
     </div>
   </div>
 
-  <div class="insight-card" id="insight-water">
-    <div class="insight-icon">💧</div>
-    <div class="insight-content">
-      <h3>Hydration</h3>
-      <p id="insight-water-text">Track water intake to spot hydration patterns.</p>
+  <div class="health-glance-row">
+    <div class="glance-chip">
+      <span class="glance-icon">🌙</span>
+      <span class="glance-val" id="glance-sleep-val">—</span>
+      <span class="glance-lbl">sleep</span>
+    </div>
+    <div class="glance-chip">
+      <span class="glance-icon">💧</span>
+      <span class="glance-val" id="glance-water-val">0/8</span>
+      <span class="glance-lbl">water</span>
+    </div>
+    <div class="glance-chip">
+      <span class="glance-icon">✨</span>
+      <span class="glance-val" id="glance-mood-val">—</span>
+      <span class="glance-lbl">mood</span>
+    </div>
+    <div class="glance-chip">
+      <span class="glance-icon">⭐</span>
+      <span class="glance-val" id="glance-score-val">—</span>
+      <span class="glance-lbl">wellness</span>
     </div>
   </div>
 
-  <div class="insight-card" id="insight-consistency">
-    <div class="insight-icon">🔥</div>
-    <div class="insight-content">
-      <h3>Consistency</h3>
-      <p id="insight-consistency-text">Regular logging helps you spot trends over time.</p>
-    </div>
-  </div>
-</div>
+  <!-- Sleep Card -->
+  <div class="health-card" id="sleep-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('sleep-card')" aria-expanded="true">
+      <span class="card-toggle-icon">🌙</span>
+      <span class="card-toggle-title">Smart Sleep Scheduler</span>
+      <span class="card-toggle-summary" id="sleep-card-summary">Not logged yet</span>
+      <span class="card-chevron">▾</span>
+    </button>
+    <div class="health-card-body">
+      <div class="sleep-grid">
 
-<div id="wellness-modal" class="modal hidden">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <h2 id="modal-title">Log Wellness</h2>
+        <div class="sleep-log-panel">
+          <h3 class="panel-label">Log Last Night</h3>
+          <div class="sleep-time-inputs">
+            <div class="time-input-group">
+              <label for="sleep-bedtime-input">Bedtime</label>
+              <input type="time" id="sleep-bedtime-input" value="23:00">
+            </div>
+            <div class="time-input-group">
+              <label for="sleep-wakeup-input">Wake-up</label>
+              <input type="time" id="sleep-wakeup-input" value="07:00">
+            </div>
+          </div>
+          <button class="btn primary sleep-log-btn" onclick="Health.logSleep()">Log Sleep</button>
+          <div class="sleep-debt-row">
+            <span class="debt-label">Weekly sleep debt</span>
+            <span class="debt-value" id="sleep-debt-val">0.0h</span>
+          </div>
+        </div>
 
-    <div id="sleep-section" class="modal-section hidden">
-      <label>Hours of sleep last night</label>
-      <input type="number" id="sleep-input" min="0" max="12" step="0.5" placeholder="e.g. 7.5">
-      <button onclick="saveWellness('sleep')">Save</button>
-    </div>
+        <div class="sleep-remind-panel">
+          <h3 class="panel-label">Bedtime Target</h3>
+          <div class="bedtime-target-display" id="bedtime-target-display">10:30 PM</div>
+          <div class="time-input-group">
+            <label for="sleep-target-wake">Target wake time</label>
+            <input type="time" id="sleep-target-wake" value="07:00" oninput="Health.updateBedtimeTarget()">
+          </div>
+          <div class="time-input-group">
+            <label for="sleep-goal-input">Sleep goal (hrs)</label>
+            <input type="number" id="sleep-goal-input" min="5" max="12" step="0.5" value="8" oninput="Health.updateBedtimeTarget()">
+          </div>
+          <button class="btn secondary sleep-notify-btn" id="sleep-notify-btn" onclick="Health.scheduleBedtimeReminder()">
+            🔔 Remind me at bedtime
+          </button>
+        </div>
 
-    <div id="mood-section" class="modal-section hidden">
-      <label>How are you feeling?</label>
-      <div class="mood-selector">
-        <button onclick="setMood(1)" class="mood-btn" data-mood="1">😢</button>
-        <button onclick="setMood(2)" class="mood-btn" data-mood="2">😟</button>
-        <button onclick="setMood(3)" class="mood-btn" data-mood="3">😐</button>
-        <button onclick="setMood(4)" class="mood-btn" data-mood="4">🙂</button>
-        <button onclick="setMood(5)" class="mood-btn" data-mood="5">😊</button>
+        <div class="sleep-chart-panel">
+          <h3 class="panel-label">This Week</h3>
+          <canvas id="sleep-chart" width="280" height="110" aria-label="Weekly sleep hours bar chart"></canvas>
+          <div class="sleep-chart-legend">
+            <span class="legend-dot legend-dot-cyan"></span><span>Actual</span>
+            <span class="legend-dot legend-dot-dim"></span><span>Goal</span>
+          </div>
+        </div>
+
       </div>
-      <button onclick="saveWellness('mood')">Save</button>
     </div>
   </div>
+
+  <!-- Water Card -->
+  <div class="health-card" id="water-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('water-card')" aria-expanded="true">
+      <span class="card-toggle-icon">💧</span>
+      <span class="card-toggle-title">Water Tracker</span>
+      <span class="card-toggle-summary" id="water-card-summary">0 / 8 glasses</span>
+      <span class="card-chevron">▾</span>
+    </button>
+    <div class="health-card-body">
+      <div class="water-layout">
+
+        <div class="water-ring-wrap">
+          <svg class="water-ring" viewBox="0 0 120 120" width="140" height="140" aria-hidden="true">
+            <circle class="water-ring-bg"   cx="60" cy="60" r="50" fill="none" stroke-width="10"/>
+            <circle class="water-ring-fill" cx="60" cy="60" r="50" fill="none" stroke-width="10"
+                    id="water-ring-fill" stroke-dasharray="314" stroke-dashoffset="314"
+                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="water-ring-label">
+            <span class="water-count" id="water-count">0</span>
+            <span class="water-denom" id="water-denom">/8</span>
+          </div>
+        </div>
+
+        <div class="water-controls">
+          <div class="water-glasses-row" id="water-glasses-row" aria-label="Glasses drunk today"></div>
+          <div class="water-btn-row">
+            <button class="btn secondary water-minus-btn" onclick="Health.addWater(-1)" aria-label="Remove one glass">−</button>
+            <button class="btn primary  water-plus-btn"  onclick="Health.addWater(1)"  aria-label="Add one glass">+ 1 Glass</button>
+          </div>
+          <p class="water-pace" id="water-pace">Keep it up!</p>
+          <div class="water-goal-row">
+            <label for="water-goal-input">Daily goal</label>
+            <input type="number" id="water-goal-input" class="water-goal-input" min="4" max="20" value="8" oninput="Health.setWaterGoal(this.value)">
+            <span>glasses</span>
+          </div>
+          <button class="btn secondary water-notify-btn" id="water-notify-btn" onclick="Health.scheduleWaterReminder()">
+            🔔 Water reminders
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Mood Card -->
+  <div class="health-card" id="mood-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('mood-card')" aria-expanded="false">
+      <span class="card-toggle-icon">✨</span>
+      <span class="card-toggle-title">Mood Check-in</span>
+      <span class="card-toggle-summary" id="mood-card-summary">How are you feeling?</span>
+      <span class="card-chevron">▸</span>
+    </button>
+    <div class="health-card-body hidden">
+      <div class="mood-layout">
+
+        <div class="mood-chat" id="mood-chat">
+          <div class="mood-chat-messages" id="mood-chat-messages">
+            <div class="mood-msg mood-msg-bot">
+              <span class="mood-bot-avatar">✨</span>
+              <span class="mood-msg-text">Hey! Let's do a quick check-in. Press Start to begin.</span>
+            </div>
+          </div>
+          <div class="mood-chat-input-row" id="mood-chat-input-row" style="display:none">
+            <input type="text" id="mood-chat-input" class="mood-input" placeholder="Type your answer…" autocomplete="off">
+            <button class="btn primary mood-send-btn" onclick="Health.sendMoodAnswer()">Send</button>
+          </div>
+          <button class="btn primary mood-start-btn" id="mood-start-btn" onclick="Health.startMoodCheckin()">
+            Start Check-in
+          </button>
+        </div>
+
+        <div class="mood-result hidden" id="mood-result">
+          <div class="mood-result-emoji" id="mood-result-emoji">😐</div>
+          <div class="mood-result-label" id="mood-result-label">Neutral</div>
+          <div class="mood-result-summary" id="mood-result-summary"></div>
+          <div class="mood-score-bar-wrap">
+            <div class="mood-score-bar" id="mood-score-bar"></div>
+          </div>
+          <button class="btn secondary" onclick="Health.resetMood()">Check in again</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Wellness Tips Card -->
+  <div class="health-card" id="tips-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('tips-card')" aria-expanded="false">
+      <span class="card-toggle-icon">🌟</span>
+      <span class="card-toggle-title">Wellness Tips</span>
+      <span class="card-toggle-summary" id="tips-card-summary">Powered by Gemini AI</span>
+      <span class="card-chevron">▸</span>
+    </button>
+    <div class="health-card-body hidden">
+      <div class="tips-header-row">
+        <p class="tips-intro">Personalized tips based on your data today.</p>
+        <button class="btn secondary tips-refresh-btn" id="tips-refresh-btn" onclick="Health.refreshTips(true)">↻ Refresh</button>
+      </div>
+      <div class="tips-list" id="tips-list">
+        <div class="tips-loading" id="tips-loading" style="display:none">
+          <div class="tips-spinner"></div>
+          <span>Generating tips…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<div class="health-toast hidden" id="health-toast" role="status" aria-live="polite"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/health.js') }}"></script>
 {% endblock %}

@@ -201,7 +201,6 @@ def generate_flashcards_api():
 @app.route("/api/insights", methods=["GET"])
 def get_insights():
     """Return correlation insights between wellness and focus."""
-    # Placeholder: correlation logic on frontend
     return jsonify({
         "insights": [
             {
@@ -211,6 +210,149 @@ def get_insights():
             }
         ]
     })
+
+
+# ─── Gemini helper ─────────────────────────────────────────────────────────────
+
+def _call_gemini(prompt_text, max_tokens=1024):
+    """Call Gemini API and return the text response, or None on failure."""
+    try:
+        from flashcard_ai import _gemini_request, _gemini_models, _get_gemini_api_key
+        api_key = _get_gemini_api_key()
+        if not api_key:
+            return None
+        body = {
+            "contents": [{"parts": [{"text": prompt_text}]}],
+            "generationConfig": {"temperature": 0.75, "maxOutputTokens": max_tokens},
+        }
+        for model in _gemini_models():
+            try:
+                payload = _gemini_request(body, api_key, model)
+                return payload["candidates"][0]["content"]["parts"][0]["text"]
+            except Exception:
+                continue
+        return None
+    except Exception:
+        return None
+
+
+# ─── Wellness API endpoints ────────────────────────────────────────────────────
+
+FALLBACK_TIPS = [
+    {"tip": "💧 Stay hydrated — aim for 8 glasses throughout the day.", "category": "water", "urgency": "medium"},
+    {"tip": "😴 Consistent sleep times help your focus more than total hours.", "category": "sleep", "urgency": "medium"},
+    {"tip": "🧠 Short breaks between study sessions improve long-term retention.", "category": "study", "urgency": "low"},
+]
+
+
+@app.route("/api/wellness/tips", methods=["POST"])
+def get_wellness_tips():
+    """Generate 3 Gemini wellness tips based on today's health data."""
+    health = (request.json or {}).get("healthData", {})
+    prompt = f"""You are a student wellness coach. Based on this student's stats, give exactly 3 short, specific, actionable wellness tips.
+
+Today's data:
+- Study time: {health.get('studyHours', 0)}h ({health.get('pomodoroCount', 0)} sessions)
+- Sleep last night: {health.get('sleepHours', '?')}h (target: {health.get('sleepTarget', 8)}h)
+- Sleep debt this week: {health.get('sleepDebt', 0):.1f}h
+- Water intake: {health.get('waterGlasses', 0)}/{health.get('waterGoal', 8)} glasses
+- Mood: {health.get('mood', 'unknown')} (score: {health.get('moodScore', '?')}/10)
+- Longest focus streak today: {health.get('longestSession', 0)} minutes
+
+Rules:
+- Each tip must be under 30 words
+- Be warm and encouraging, not preachy
+- Be specific to their numbers
+- Start each tip with a relevant emoji
+- Return ONLY a JSON array with no markdown, no code fences:
+[{{"tip": "...", "category": "sleep|water|mood|study|general", "urgency": "low|medium|high"}}]"""
+
+    text = _call_gemini(prompt, max_tokens=512)
+    if text:
+        try:
+            # Strip markdown fences if present
+            text = text.strip()
+            if text.startswith("```"):
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+            tips = json.loads(text.strip())
+            if isinstance(tips, list) and tips:
+                return jsonify({"tips": tips[:3]})
+        except Exception:
+            pass
+
+    return jsonify({"tips": FALLBACK_TIPS})
+
+
+@app.route("/api/wellness/mood-questions", methods=["POST"])
+def get_mood_questions():
+    """Generate 3 adaptive mood check-in questions via Gemini."""
+    stats = (request.json or {}).get("stats", {})
+    prompt = f"""You are a compassionate student wellness assistant. Generate exactly 3 short, warm, conversational questions to assess a student's mood and stress.
+
+Their current context:
+- Study time today: {stats.get('studyHoursToday', 0)} hours
+- Sleep last night: {stats.get('hoursSlept', '?')} hours
+- Water today: {stats.get('waterGlasses', 0)}/{stats.get('waterGoal', 8)} glasses
+- Current streak: {stats.get('streak', 0)} days
+
+Rules:
+- Each question under 15 words
+- Casual and warm, not clinical
+- Vary the topics (mood, energy, stress)
+- Return ONLY a JSON array, no markdown:
+["question 1", "question 2", "question 3"]"""
+
+    text = _call_gemini(prompt, max_tokens=256)
+    if text:
+        try:
+            text = text.strip()
+            if text.startswith("```"):
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+            questions = json.loads(text.strip())
+            if isinstance(questions, list) and len(questions) >= 3:
+                return jsonify({"questions": questions[:3]})
+        except Exception:
+            pass
+
+    return jsonify({"questions": [
+        "How are you feeling right now?",
+        "How's your energy and focus today?",
+        "Anything stressing you out lately?",
+    ]})
+
+
+@app.route("/api/wellness/mood-analyze", methods=["POST"])
+def analyze_mood():
+    """Analyze mood check-in answers and return a mood object."""
+    qa = (request.json or {}).get("qa", [])
+    pairs = "\n".join(f"Q: {item['question']}\nA: {item['answer']}" for item in qa)
+    prompt = f"""You are a student wellness assistant. A student answered 3 mood check-in questions. Analyze their responses and return a mood assessment.
+
+Conversation:
+{pairs}
+
+Return ONLY a JSON object, no markdown:
+{{"mood": "happy|content|neutral|stressed|anxious|tired|overwhelmed", "score": <1-10>, "summary": "<one sentence, under 15 words>"}}"""
+
+    text = _call_gemini(prompt, max_tokens=128)
+    if text:
+        try:
+            text = text.strip()
+            if text.startswith("```"):
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+            result = json.loads(text.strip())
+            if "mood" in result and "score" in result:
+                return jsonify(result)       
+        except Exception:
+            pass
+
+    return jsonify({"mood": "neutral", "score": 5, "summary": "Doing okay today."})
 
 
 @app.route("/calendar")

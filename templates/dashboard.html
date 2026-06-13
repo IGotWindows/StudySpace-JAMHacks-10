@@ -5,19 +5,14 @@
   <section class="dashboard-main">
     <div class="hero dashboard-hero">
       <h1>Study smarter, not longer.</h1>
-      <p>Track your focus, manage your schedule, and review with flashcards — all in one place.</p>
+      <p class="page-subtitle">Track your focus, manage your schedule, and review with flashcards — all in one place.</p>
     </div>
 
     <div class="quick-links">
-      <a class="quick-link card" href="{{ url_for('focus') }}">
-        <span class="quick-link-icon">⏱</span>
-        <h2>Focus</h2>
-        <p>Pomodoro timer and webcam check-in for deep work sessions.</p>
-      </a>
-      <a class="quick-link card" href="{{ url_for('study') }}">
-        <span class="quick-link-icon">📚</span>
-        <h2>Study</h2>
-        <p>Build and review flashcards for your next exam.</p>
+      <a class="quick-link card" href="{{ url_for('health') }}">
+        <span class="quick-link-icon">💚</span>
+        <h2>Health</h2>
+        <p>Log sleep, water, and mood. See how wellness connects to focus.</p>
       </a>
       <a class="quick-link card" href="{{ url_for('calendar_page') }}">
         <span class="quick-link-icon">📅</span>

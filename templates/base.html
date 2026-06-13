@@ -11,8 +11,9 @@
     <a class="logo" href="{{ url_for('home') }}">Studious</a>
     <div class="links">
       <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Dashboard</a>
-      <a href="{{ url_for('education') }}" class="{% if request.endpoint == 'education' %}active{% endif %}">Education</a>
+      <a href="{{ url_for('education') }}" class="{% if request.endpoint in ['education', 'focus', 'study'] %}active{% endif %}">Education</a>
       <a href="{{ url_for('calendar_page') }}" class="{% if request.endpoint == 'calendar_page' %}active{% endif %}">Calendar</a>
+      <a href="{{ url_for('health') }}" class="{% if request.endpoint == 'health' %}active{% endif %}">Health</a>
     </div>
   </nav>
 

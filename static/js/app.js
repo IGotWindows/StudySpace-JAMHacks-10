@@ -87,7 +87,7 @@ function startTimer() {
       clearInterval(timerInterval);
       timerInterval = null;
       completeSession();
-      alert("Session complete! Great focus!");
+      alert("Session complete. Nice work!");
     }
   }, 1000);
 }
@@ -137,7 +137,7 @@ async function startCamera() {
   if (!video) return;
 
   if (cameraStream) {
-    if (status) status.textContent = "Camera is already running.";
+    if (status) status.textContent = "Camera is already on.";
     return;
   }
 
@@ -145,7 +145,7 @@ async function startCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     cameraStream = stream;
     video.srcObject = stream;
-    if (status) status.textContent = "Camera is running.";
+    if (status) status.textContent = "Camera is on.";
   } catch (err) {
     if (status) status.textContent = "Could not access camera.";
   }
@@ -162,7 +162,7 @@ function closeCamera() {
   cameraStream.getTracks().forEach((track) => track.stop());
   cameraStream = null;
   if (video) video.srcObject = null;
-  if (status) status.textContent = "Camera stopped.";
+    if (status) status.textContent = "Camera is off.";
 }
 
 // ============ WELLNESS LOGGING ============
@@ -228,9 +228,9 @@ function saveWellness(type) {
       saveData();
       updateDashboard();
       closeModal();
-      alert("Sleep logged!");
+      alert("Sleep saved.");
     } else {
-      alert("Please enter a valid number of hours.");
+      alert("Enter a valid number of hours.");
     }
   } else if (type === "mood") {
     if (currentMoodValue > 0) {
@@ -238,9 +238,9 @@ function saveWellness(type) {
       saveData();
       updateDashboard();
       closeModal();
-      alert("Mood logged!");
+      alert("Mood saved.");
     } else {
-      alert("Please select a mood.");
+      alert("Select a mood first.");
     }
   }
 }
@@ -468,9 +468,9 @@ function updateDashboard() {
   const hour = new Date().getHours();
   const greeting = document.getElementById("user-greeting");
   if (greeting) {
-    if (hour < 12) greeting.textContent = "Good morning! Let's track your day.";
-    else if (hour < 18) greeting.textContent = "Good afternoon! How's your focus?";
-    else greeting.textContent = "Good evening! Wrapping up?";
+    if (hour < 12) greeting.textContent = "Good morning. Ready to make today count?";
+    else if (hour < 18) greeting.textContent = "Good afternoon. How's your day going?";
+    else greeting.textContent = "Good evening. Time to wind down and reflect.";
   }
 }
 

@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Health — Studious{% endblock %}
 {% block content %}
-<h1 class="page-title">Health & Wellness</h1>
-<p class="page-subtitle" id="user-greeting">Track sleep, hydration, mood, and how they connect to your focus.</p>
+<h1 class="page-title">Health</h1>
+<p class="page-subtitle" id="user-greeting">Log your sleep, hydration, and mood — then see how they connect to focus.</p>
 
 <div class="score-container">
   <div class="score-box">
-    <h2>Focus + Wellness Score</h2>
+    <h2>Wellness Score</h2>
     <div class="score-display" id="combined-score">0<span class="score-unit">/100</span></div>
-    <p class="score-description">Your wellness and focus are connected. Higher score = better balance.</p>
+    <p class="score-description">A blend of focus time and daily wellness. Higher is better.</p>
   </div>
   <div class="streak-box">
-    <h2>Current Streak</h2>
+    <h2>Logging Streak</h2>
     <div class="streak-display" id="streak-count">0 days</div>
-    <p class="streak-description">Keep logging to maintain your streak!</p>
+    <p class="streak-description">Log daily to keep your streak going.</p>
   </div>
 </div>
 
 <div class="tiles-section">
-  <h2>Today's Metrics</h2>
+  <h2>Today at a Glance</h2>
   <div class="tiles-grid">
     <div class="tile">
       <div class="tile-header">Study Time</div>
@@ -45,36 +45,36 @@
       <div class="tile-header">Mood</div>
       <div class="tile-mood" id="tile-mood">😐</div>
       <div class="tile-sessions">How are you feeling?</div>
-      <button class="tile-btn" onclick="logWellnessModal('mood')">Update</button>
+      <button class="tile-btn" onclick="logWellnessModal('mood')">Update Mood</button>
     </div>
   </div>
 </div>
 
 <div class="insights-section">
   <h2>Your Patterns</h2>
-  <p class="insights-intro">Here's what we noticed about your wellness and focus:</p>
+  <p class="insights-intro">Insights based on your recent logs:</p>
 
   <div class="insight-card" id="insight-sleep">
     <div class="insight-icon">😴</div>
     <div class="insight-content">
       <h3>Sleep & Focus</h3>
-      <p id="insight-sleep-text">Log sleep to unlock insights.</p>
+      <p id="insight-sleep-text">Log sleep to see how rest affects your focus.</p>
     </div>
   </div>
 
   <div class="insight-card" id="insight-water">
     <div class="insight-icon">💧</div>
     <div class="insight-content">
-      <h3>Hydration & Clarity</h3>
-      <p id="insight-water-text">Track water intake to see patterns.</p>
+      <h3>Hydration</h3>
+      <p id="insight-water-text">Track water intake to spot hydration patterns.</p>
     </div>
   </div>
 
   <div class="insight-card" id="insight-consistency">
     <div class="insight-icon">🔥</div>
     <div class="insight-content">
-      <h3>Consistency Wins</h3>
-      <p id="insight-consistency-text">Consistent logging correlates with higher focus scores.</p>
+      <h3>Consistency</h3>
+      <p id="insight-consistency-text">Regular logging helps you spot trends over time.</p>
     </div>
   </div>
 </div>
@@ -85,13 +85,13 @@
     <h2 id="modal-title">Log Wellness</h2>
 
     <div id="sleep-section" class="modal-section hidden">
-      <label>How many hours did you sleep last night?</label>
-      <input type="number" id="sleep-input" min="0" max="12" step="0.5" placeholder="e.g., 7.5">
-      <button onclick="saveWellness('sleep')">Save Sleep</button>
+      <label>Hours of sleep last night</label>
+      <input type="number" id="sleep-input" min="0" max="12" step="0.5" placeholder="e.g. 7.5">
+      <button onclick="saveWellness('sleep')">Save</button>
     </div>
 
     <div id="mood-section" class="modal-section hidden">
-      <label>How are you feeling right now?</label>
+      <label>How are you feeling?</label>
       <div class="mood-selector">
         <button onclick="setMood(1)" class="mood-btn" data-mood="1">😢</button>
         <button onclick="setMood(2)" class="mood-btn" data-mood="2">😟</button>
@@ -99,7 +99,7 @@
         <button onclick="setMood(4)" class="mood-btn" data-mood="4">🙂</button>
         <button onclick="setMood(5)" class="mood-btn" data-mood="5">😊</button>
       </div>
-      <button onclick="saveWellness('mood')">Save Mood</button>
+      <button onclick="saveWellness('mood')">Save</button>
     </div>
   </div>
 </div>

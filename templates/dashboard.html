@@ -5,24 +5,24 @@
   <section class="dashboard-main">
     <div class="hero dashboard-hero">
       <h1>Study smarter, not longer.</h1>
-      <p class="page-subtitle">Track your focus, manage your schedule, and review with flashcards — all in one place.</p>
+      <p class="page-subtitle">Your home base for wellness, scheduling, and school tools — everything in one place.</p>
     </div>
 
     <div class="quick-links">
       <a class="quick-link card" href="{{ url_for('health') }}">
         <span class="quick-link-icon">💚</span>
         <h2>Health</h2>
-        <p>Log sleep, water, and mood. See how wellness connects to focus.</p>
+        <p>Track sleep, hydration, and mood. See how wellness shapes your focus.</p>
       </a>
       <a class="quick-link card" href="{{ url_for('calendar_page') }}">
         <span class="quick-link-icon">📅</span>
         <h2>Calendar</h2>
-        <p>Add assignments, tests, and activities by day.</p>
+        <p>Plan assignments, tests, and activities — all saved to your schedule.</p>
       </a>
       <a class="quick-link card" href="{{ url_for('education') }}">
         <span class="quick-link-icon">🎓</span>
         <h2>Education</h2>
-        <p>Browse all learning tools in one spot.</p>
+        <p>Focus sessions, flashcards, and grade planning in one spot.</p>
       </a>
     </div>
   </section>
@@ -30,8 +30,8 @@
   <aside class="upcoming-sidebar card">
     <h2>This Week</h2>
     <ul id="upcoming-events-list" class="upcoming-events-list"></ul>
-    <p id="no-upcoming-events" class="no-upcoming-events hidden">No events left this week. Add some on the calendar.</p>
-    <a class="btn secondary upcoming-calendar-link" href="{{ url_for('calendar_page') }}">View Calendar</a>
+    <p id="no-upcoming-events" class="no-upcoming-events hidden">Nothing scheduled this week. Add events on your calendar.</p>
+    <a class="btn secondary upcoming-calendar-link" href="{{ url_for('calendar_page') }}">Open Calendar</a>
   </aside>
 </div>
 

@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block title %}Study — Studious{% endblock %}
 {% block content %}
-<h1 class="page-title">Study Tools</h1>
-<p class="page-subtitle">Create flashcards and review them before your next test.</p>
+<h1 class="page-title">Study</h1>
+<p class="page-subtitle">Create flashcards and review them whenever you need a quick refresh.</p>
 
 <div class="card">
-  <h2>Create Flashcard</h2>
-  <input id="question" type="text" placeholder="Question">
-  <input id="answer" type="text" placeholder="Answer">
-  <button class="btn primary" onclick="addFlashcard()">Add Flashcard</button>
+  <h2>New Flashcard</h2>
+  <input id="question" type="text" placeholder="Front — question or term">
+  <input id="answer" type="text" placeholder="Back — answer or definition">
+  <button class="btn primary" onclick="addFlashcard()">Add Card</button>
 </div>
 
 <div class="card">
-  <h2>Your Flashcards</h2>
+  <h2>Your Deck</h2>
   <ul id="flashcard-list" class="flashcard-list"></ul>
-  <p id="no-flashcards" class="empty-state">No flashcards yet. Add one above.</p>
+  <p id="no-flashcards" class="empty-state">No flashcards yet. Add your first one above.</p>
 </div>
 {% endblock %}

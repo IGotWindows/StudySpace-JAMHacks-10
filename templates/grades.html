@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Grades — Studious{% endblock %}
+{% block content %}
+<div class="grades-layout">
+  <section class="grades-main">
+    <h1 class="page-title">Grades</h1>
+    <p class="page-subtitle">Upcoming tests from your calendar, plus tools to plan your final grade.</p>
+
+    <div class="card grades-tests-card">
+      <h2>Upcoming Tests</h2>
+      <ul id="upcoming-tests-list" class="grades-test-list"></ul>
+      <p id="no-upcoming-tests" class="empty-state">No tests scheduled. Add one below or mark tests on your calendar.</p>
+    </div>
+
+    <div class="card">
+      <h2>Add a Test</h2>
+      <div class="grades-form-grid">
+        <input id="test-title" type="text" placeholder="Test name, e.g. Biology midterm">
+        <input id="test-date" type="date">
+        <input id="test-course" type="text" placeholder="Class name (optional)">
+        <button type="button" class="btn primary" onclick="addManualTest()">Add Test</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="grades-sidebar">
+    <div class="card">
+      <h2>Assignment Average</h2>
+      <p class="grades-card-intro">Add graded work to see your current class average.</p>
+      <ul id="assignment-list" class="assignment-list"></ul>
+      <p id="no-assignments" class="empty-state">No assignments added yet.</p>
+
+      <div class="grades-form-grid grades-form-compact">
+        <input id="assign-name" type="text" placeholder="Assignment name">
+        <input id="assign-earned" type="number" min="0" step="0.1" placeholder="Points earned">
+        <input id="assign-possible" type="number" min="0.1" step="0.1" placeholder="Points possible">
+        <input id="assign-weight" type="number" min="0" max="100" step="1" placeholder="Weight % (optional)">
+        <button type="button" class="btn primary" onclick="addAssignment()">Add Assignment</button>
+      </div>
+
+      <div class="grade-result-box">
+        <span class="grade-result-label">Current average</span>
+        <span id="assignment-grade-result" class="grade-result-value">—</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Final Grade Planner</h2>
+      <p class="grades-card-intro">Estimate your final grade or find the score you need on the exam.</p>
+
+      <label class="grades-field">
+        Current grade before final
+        <input id="final-current-grade" type="number" min="0" max="100" step="0.1" placeholder="Filled from assignments">
+      </label>
+      <label class="grades-field">
+        Final exam weight (% of total)
+        <input id="final-exam-weight" type="number" min="0" max="100" step="1" value="20">
+      </label>
+      <label class="grades-field">
+        Final exam score (optional)
+        <input id="final-exam-score" type="number" min="0" max="100" step="0.1" placeholder="e.g. 88">
+      </label>
+      <label class="grades-field">
+        Target final grade (optional)
+        <input id="final-target-grade" type="number" min="0" max="100" step="0.1" placeholder="e.g. 90">
+      </label>
+      <button type="button" class="btn secondary" onclick="calculateFinalGrade()">Calculate</button>
+
+      <div id="final-grade-results" class="final-grade-results hidden">
+        <div class="grade-result-box">
+          <span class="grade-result-label">Projected final grade</span>
+          <span id="projected-final-grade" class="grade-result-value">—</span>
+        </div>
+        <p id="needed-final-score" class="grades-needed-text"></p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script id="calendar-init-data" type="application/json">{{ calendar_json|safe }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar-events.js') }}"></script>
+<script src="{{ url_for('static', filename='js/grades.js') }}"></script>
+{% endblock %}

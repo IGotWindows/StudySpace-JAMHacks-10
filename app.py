@@ -94,6 +94,11 @@ def study():
     return render_template("study.html")
 
 
+@app.route("/grades")
+def grades():
+    return render_template("grades.html", calendar_json=calendar_json_for_template())
+
+
 @app.route("/health")
 def health():
     return render_template("health.html")

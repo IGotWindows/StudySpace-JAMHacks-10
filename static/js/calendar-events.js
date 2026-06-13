@@ -44,6 +44,21 @@ function formatEventLabel(event) {
   return `${formatEventTime(normalized)} · ${normalized.title}`;
 }
 
+function appendEventLabelElements(container, event) {
+  const normalized = normalizeEvent(event);
+
+  const timeEl = document.createElement("span");
+  timeEl.className = "day-event-time";
+  timeEl.textContent = formatEventTime(normalized);
+
+  const titleEl = document.createElement("span");
+  titleEl.className = "day-event-title";
+  titleEl.textContent = normalized.title;
+
+  container.appendChild(timeEl);
+  container.appendChild(titleEl);
+}
+
 function eventSortKey(event) {
   const { startTime } = normalizeEvent(event);
   return startTime || "00:00";

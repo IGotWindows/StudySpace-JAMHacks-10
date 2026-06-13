@@ -102,10 +102,29 @@ textarea {
   line-height: 1.15;
 }
 
+.dashboard-hero .page-subtitle {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .quick-links {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.dashboard-links .quick-link-wide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard-links .quick-link-wide .quick-link-icon {
+  margin-bottom: 0;
+  flex-shrink: 0;
+  font-size: 2rem;
 }
 
 .education-links {
@@ -738,11 +757,29 @@ input {
 
 .day-events {
   margin: 6px 0 0;
-  padding-left: 14px;
-  font-size: 0.72rem;
+  padding: 0;
+  list-style: none;
+  line-height: 1.35;
+}
+
+.day-event-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.day-event-time {
+  font-size: 0.65rem;
+  font-weight: 500;
   color: #93c5fd;
-  line-height: 1.4;
-  list-style: disc;
+  letter-spacing: 0.01em;
+}
+
+.day-event-title {
+  font-size: 0.72rem;
+  color: #e2e8f0;
+  line-height: 1.3;
 }
 
 .day-events li {
@@ -751,8 +788,8 @@ input {
 
 .more-events {
   color: #94a3b8;
-  list-style: none;
-  margin-left: -14px;
+  font-size: 0.72rem;
+  margin-top: 2px;
 }
 
 .day-panel {
@@ -819,6 +856,16 @@ input {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  padding-top: 4px;
+  border-top: 1px solid #334155;
+}
+
+.panel-event-times .time-picker-heading {
+  color: #93c5fd;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .panel-event-details {

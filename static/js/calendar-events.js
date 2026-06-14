@@ -433,3 +433,29 @@ function createTimePickerBox(heading, value, onChange) {
 
   return { box, picker };
 }
+
+// Google Calendar cache and credential management
+function loadGCalCache() {
+  const cached = localStorage.getItem("GCAL_CACHE_KEY");
+  return cached ? JSON.parse(cached) : {};
+}
+
+function saveGCalCache(cache) {
+  localStorage.setItem("GCAL_CACHE_KEY", JSON.stringify(cache));
+}
+
+function getGCalUrl() {
+  return localStorage.getItem("GCAL_URL_KEY") || "";
+}
+
+function setGCalUrl(url) {
+  if (url) {
+    localStorage.setItem("GCAL_URL_KEY", url);
+  } else {
+    localStorage.removeItem("GCAL_URL_KEY");
+  }
+}
+
+function getMonthKey(year, month) {
+  return `${year}-${String(month).padStart(2, "0")}`;
+}

@@ -116,6 +116,25 @@ def _openai_request(body, api_key):
         return json.loads(response.read().decode("utf-8"))
 
 
+def _get_anthropic_api_key():
+    return os.environ.get("ANTHROPIC_API_KEY", "").strip()
+
+
+def _anthropic_request(body, api_key):
+    request = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=json.dumps(body).encode("utf-8"),
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=90) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
 def _http_error_message(exc):
     try:
         body = json.loads(exc.read().decode("utf-8"))

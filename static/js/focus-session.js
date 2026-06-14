@@ -40,7 +40,7 @@
     return document.body?.dataset?.page === FOCUS_PAGE;
   }
 
-  function ensureWidget() {a
+  function ensureWidget() {
     if (document.getElementById('focus-session-pip')) return;
 
     const pip = document.createElement('div');

@@ -2,6 +2,9 @@ from flask import Flask, render_template, jsonify, request
 from datetime import date
 import calendar
 import json
+import os
+import urllib.request
+import urllib.error
 
 try:
     from dotenv import load_dotenv
@@ -175,26 +178,20 @@ def get_insights():
     })
 
 
-# ─── Gemini helper ─────────────────────────────────────────────────────────────
-
-def _call_gemini(prompt_text, max_tokens=1024):
-    """Call Gemini API and return the text response, or None on failure."""
+def _call_anthropic(prompt_text, max_tokens=1024):
+    """Call Anthropic Messages API and return the text response, or None on failure."""
     try:
-        from flashcard_ai import _gemini_request, _gemini_models, _get_gemini_api_key
-        api_key = _get_gemini_api_key()
+        from flashcard_ai import _anthropic_request, _get_anthropic_api_key
+        api_key = _get_anthropic_api_key()
         if not api_key:
             return None
         body = {
-            "contents": [{"parts": [{"text": prompt_text}]}],
-            "generationConfig": {"temperature": 0.75, "maxOutputTokens": max_tokens},
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt_text}],
         }
-        for model in _gemini_models():
-            try:
-                payload = _gemini_request(body, api_key, model)
-                return payload["candidates"][0]["content"]["parts"][0]["text"]
-            except Exception:
-                continue
-        return None
+        payload = _anthropic_request(body, api_key)
+        return payload["content"][0]["text"]
     except Exception:
         return None
 
@@ -210,7 +207,7 @@ FALLBACK_TIPS = [
 
 @app.route("/api/wellness/tips", methods=["POST"])
 def get_wellness_tips():
-    """Generate 3 Gemini wellness tips based on today's health data."""
+    """Generate 3 Claude wellness tips based on today's health data."""
     health = (request.json or {}).get("healthData", {})
     prompt = f"""You are a student wellness coach. Based on this student's stats, give exactly 3 short, specific, actionable wellness tips.
 
@@ -230,7 +227,7 @@ Rules:
 - Return ONLY a JSON array with no markdown, no code fences:
 [{{"tip": "...", "category": "sleep|water|mood|study|general", "urgency": "low|medium|high"}}]"""
 
-    text = _call_gemini(prompt, max_tokens=512)
+    text = _call_anthropic(prompt, max_tokens=512)
     if text:
         try:
             # Strip markdown fences if present
@@ -250,7 +247,7 @@ Rules:
 
 @app.route("/api/wellness/mood-questions", methods=["POST"])
 def get_mood_questions():
-    """Generate 3 adaptive mood check-in questions via Gemini."""
+    """Generate 3 adaptive mood check-in questions via Anthropic."""
     stats = (request.json or {}).get("stats", {})
     prompt = f"""You are a compassionate student wellness assistant. Generate exactly 3 short, warm, conversational questions to assess a student's mood and stress.
 
@@ -267,7 +264,7 @@ Rules:
 - Return ONLY a JSON array, no markdown:
 ["question 1", "question 2", "question 3"]"""
 
-    text = _call_gemini(prompt, max_tokens=256)
+    text = _call_anthropic(prompt, max_tokens=256)
     if text:
         try:
             text = text.strip()
@@ -290,7 +287,7 @@ Rules:
 
 @app.route("/api/wellness/mood-analyze", methods=["POST"])
 def analyze_mood():
-    """Analyze mood check-in answers and return a mood object."""
+    """Analyze mood check-in answers using Anthropic and return a mood object."""
     qa = (request.json or {}).get("qa", [])
     pairs = "\n".join(f"Q: {item['question']}\nA: {item['answer']}" for item in qa)
     prompt = f"""You are a student wellness assistant. A student answered 3 mood check-in questions. Analyze their responses and return a mood assessment.
@@ -301,7 +298,7 @@ Conversation:
 Return ONLY a JSON object, no markdown:
 {{"mood": "happy|content|neutral|stressed|anxious|tired|overwhelmed", "score": <1-10>, "summary": "<one sentence, under 15 words>"}}"""
 
-    text = _call_gemini(prompt, max_tokens=128)
+    text = _call_anthropic(prompt, max_tokens=128)
     if text:
         try:
             text = text.strip()
@@ -323,7 +320,77 @@ def calendar_page():
     return render_template("calendar.html", calendar_json=calendar_json_for_template())
 
 
+# ── Google Calendar iCal sync ──────────────────────────────────────────────────
+
+@app.route("/api/gcal/events", methods=["POST"])
+def gcal_events():
+    from icalendar import Calendar as ICal
+    from datetime import datetime as dt_cls, date as date_cls
+
+    data = request.get_json(silent=True) or {}
+    url = str(data.get("url", "")).strip()
+    year = int(data.get("year", 0))
+    month = int(data.get("month", 0))
+
+    if not url.startswith("https://") or not year or not month:
+        return jsonify({"error": "Invalid request"}), 400
+
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "StudiousApp/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            raw = resp.read()
+    except urllib.error.URLError as e:
+        return jsonify({"error": f"Could not reach calendar: {e.reason}"}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+    try:
+        cal = ICal.from_ical(raw)
+    except Exception:
+        return jsonify({"error": "Could not parse calendar data — check the URL"}), 422
+
+    events = {}
+
+    for comp in cal.walk():
+        if comp.name != "VEVENT":
+            continue
+        dtstart = comp.get("DTSTART")
+        if not dtstart:
+            continue
+
+        dt = dtstart.dt
+        if isinstance(dt, dt_cls):
+            event_date = dt.date()
+            start_time = dt.strftime("%H:%M")
+        elif isinstance(dt, date_cls):
+            event_date = dt
+            start_time = ""
+        else:
+            continue
+
+        if event_date.year != year or event_date.month != month:
+            continue
+
+        dtend = comp.get("DTEND")
+        end_time = ""
+        if dtend:
+            end = dtend.dt
+            if isinstance(end, dt_cls):
+                end_time = end.strftime("%H:%M")
+
+        day = str(event_date.day)
+        events.setdefault(day, []).append({
+            "title": str(comp.get("SUMMARY", "(no title)")),
+            "startTime": start_time,
+            "endTime": end_time,
+            "isAssessment": False,
+            "fromGCal": True,
+        })
+
+    return jsonify({"events": events})
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
 
 

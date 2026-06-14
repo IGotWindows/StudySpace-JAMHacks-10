@@ -1482,7 +1482,7 @@ button:disabled {
 
 .study-ai-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px;
+  grid-template-columns: minmax(0, 1fr) 140px;
   gap: 12px;
 }
 
@@ -1500,6 +1500,8 @@ button:disabled {
 
 .study-count-field input {
   margin: 0;
+  width: 100%;
+  max-width: 115px;
 }
 
 .study-file-field {
@@ -1528,6 +1530,53 @@ button:disabled {
   color: var(--space-white);
   cursor: pointer;
   font-family: inherit;
+}
+
+/* Focus session header + countdown controls */
+.focus-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.focus-mode-inline {
+  color: var(--space-gray);
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.focus-mode-inline select {
+  margin-left: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--space-surface);
+  color: var(--space-white);
+  border: 1px solid rgba(77,208,225,0.06);
+}
+
+.focus-controls-row {
+  margin-top: 12px;
+  display: block;
+}
+
+.focus-countdown-label {
+  display: block;
+  color: var(--space-gray);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.focus-countdown-label input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(77,208,225,0.06);
+  border-radius: 10px;
+  background: rgba(11,14,35,0.95);
+  color: var(--space-white);
 }
 
 .study-deck-header {
@@ -1849,7 +1898,8 @@ video {
 input {
   display: block;
   width: 100%;
-  max-width: 500px;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 10px 0;
   padding: 12px;
   border-radius: 10px;
@@ -2494,6 +2544,127 @@ input {
   color: var(--space-cyan);
 }
 
+/* Google Calendar events — grid */
+.day-event-gcal {
+  background: rgba(66, 133, 244, 0.12);
+  border-left: 2px solid #4285f4;
+}
+
+.day-event-gcal .day-event-title {
+  color: #a8c8f8;
+}
+
+.day-event-gcal .day-event-time {
+  color: #7ab0f0;
+}
+
+/* Google Calendar events — day panel */
+.gcal-day-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.gcal-day-header {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #4285f4;
+  margin: 0 0 8px;
+}
+
+.panel-event-gcal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: rgba(66, 133, 244, 0.08);
+  border-left: 2px solid #4285f4;
+  margin-bottom: 4px;
+}
+
+.panel-event-gcal-title {
+  font-size: 0.88rem;
+  color: #e2e8f0;
+}
+
+.panel-event-gcal-time {
+  font-size: 0.78rem;
+  color: #7ab0f0;
+  margin-left: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Google Calendar sync card */
+.gcal-sync-card {
+  margin-top: 16px;
+}
+
+.gcal-sync-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.gcal-sync-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  flex: 1;
+}
+
+.gcal-badge {
+  background: rgba(66, 133, 244, 0.18);
+  color: #93c5fd;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.gcal-hint {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  margin-bottom: 12px;
+}
+
+.gcal-url-row {
+  display: flex;
+  gap: 8px;
+}
+
+.gcal-url-row input[type="url"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.gcal-error {
+  color: #f87171;
+  font-size: 0.82rem;
+  margin-top: 8px;
+}
+
+.gcal-connected-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gcal-sync-status {
+  font-size: 0.84rem;
+  color: #64748b;
+  flex: 1;
+}
+
 .add-event-form input[type="text"] {
   flex: 1;
   min-width: 200px;
@@ -2736,12 +2907,14 @@ input {
   gap: 12px;
 }
 
-.grades-form-grid .btn {
+.grades-form-grid .btn,
+.grades-full-col {
   grid-column: 1 / -1;
 }
 
 .grades-form-compact {
   margin-top: 16px;
+  grid-template-columns: 1fr;
 }
 
 .grades-field {
@@ -3806,7 +3979,7 @@ input {
   font-weight: 700;
   color: var(--space-white);
   line-height: 1;
-  font-family: "Orbitron", "Lexend", system-ui, sans-serif;
+  font-family: "Lexend", system-ui, sans-serif;
   letter-spacing: -0.03em;
 }
 
@@ -4153,6 +4326,19 @@ input {
   display: block;
 }
 
+/* ── Focus End Session button ── */
+.focus-end-btn {
+  background: linear-gradient(135deg, #7C3AED 0%, #DC2626 100%) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 2px 14px rgba(220, 38, 38, 0.2) !important;
+}
+
+.focus-end-btn:hover {
+  box-shadow: 0 0 28px rgba(220, 38, 38, 0.35), 0 0 0 1px rgba(220, 38, 38, 0.2) !important;
+  filter: brightness(1.1) !important;
+  border-color: rgba(220, 38, 38, 0.65) !important;
+}
+
 /* ── Responsive ── */
 @media (max-width: 960px) {
   .dash-summary-grid {
@@ -4181,4 +4367,164 @@ input {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* ================================================================
+   EDUCATION PAGE V2 — FEATURE OVERVIEW
+   ================================================================ */
+
+.edu-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.edu-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.edu-tagline {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  color: var(--space-gray);
+}
+
+/* ── Glance stats row (mirrors health-glance-row) ── */
+.edu-glance-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.edu-glance-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 130px;
+  background: rgba(77, 208, 225, 0.05);
+  border: 1px solid rgba(77, 208, 225, 0.13);
+  border-radius: 14px;
+  padding: 12px 18px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.edu-glance-chip:hover {
+  background: rgba(77, 208, 225, 0.08);
+  border-color: rgba(77, 208, 225, 0.25);
+}
+
+.edu-glance-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.edu-glance-val {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--space-white);
+  font-family: "Lexend", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.edu-glance-lbl {
+  font-size: 0.72rem;
+  color: var(--space-gray-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ── Feature cards grid ── */
+.edu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+/* ── Feature card ── */
+.edu-feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 24px;
+}
+
+.edu-feature-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.edu-feature-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.edu-feature-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--space-cyan);
+  background: rgba(77, 208, 225, 0.1);
+  border: 1px solid rgba(77, 208, 225, 0.2);
+  border-radius: 100px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.edu-feature-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--space-white);
+  font-family: "Orbitron", "Lexend", system-ui, sans-serif;
+  line-height: 1.1;
+}
+
+.edu-feature-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--space-gray);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.edu-feature-stat {
+  font-size: 0.8rem;
+  color: var(--space-gray-dim);
+  padding: 7px 11px;
+  background: rgba(155, 109, 255, 0.05);
+  border-left: 2px solid rgba(155, 109, 255, 0.22);
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edu-feature-btn {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .edu-cards-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 620px) {
+  .edu-cards-grid { grid-template-columns: 1fr; }
 }

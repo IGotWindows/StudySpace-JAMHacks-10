@@ -1,25 +1,79 @@
 {% extends "base.html" %}
-{% block title %}Education — Study Space{% endblock %}
+{% block title %}Education — StudySpace{% endblock %}
 {% block content %}
-<div class="education-page">
-<h1 class="page-title">Education</h1>
+<div class="edu-page">
 
-<div class="quick-links education-links">
-  <a class="quick-link card" href="{{ url_for('focus') }}">
-    <span class="quick-link-icon">⏱</span>
-    <h2>Focus</h2>
-    <p>Webcam-backed sessions that only count time when you're actually on task.</p>
-  </a>
-  <a class="quick-link card" href="{{ url_for('study') }}">
-    <span class="quick-link-icon">📚</span>
-    <h2>Study</h2>
-    <p>Turn your notes into flashcards and quiz yourself before the next exam.</p>
-  </a>
-  <a class="quick-link card" href="{{ url_for('grades') }}">
-    <span class="quick-link-icon">📊</span>
-    <h2>Grades</h2>
-    <p>Preview upcoming tests and figure out what you need on assignments and finals.</p>
-  </a>
+  <!-- ── HEADER ── -->
+  <header class="edu-header scroll-reveal" data-reveal-delay="0">
+    <div>
+      <h1 class="page-title">Education</h1>
+      <p class="edu-tagline">Your learning tools, all in one place.</p>
+    </div>
+  </header>
+
+  <!-- ── QUICK STATS ── -->
+  <div class="edu-glance-row scroll-reveal" data-reveal-delay="1">
+    <div class="edu-glance-chip">
+      <span class="edu-glance-icon">🃏</span>
+      <span class="edu-glance-val" id="edu-flashcard-count">0</span>
+      <span class="edu-glance-lbl">flashcards</span>
+    </div>
+    <div class="edu-glance-chip">
+      <span class="edu-glance-icon">⏱</span>
+      <span class="edu-glance-val" id="edu-sessions-today">0</span>
+      <span class="edu-glance-lbl">sessions today</span>
+    </div>
+    <div class="edu-glance-chip">
+      <span class="edu-glance-icon">📋</span>
+      <span class="edu-glance-val" id="edu-assessments-count">0</span>
+      <span class="edu-glance-lbl">upcoming tests</span>
+    </div>
+  </div>
+
+  <!-- ── FEATURE CARDS ── -->
+  <div class="edu-cards-grid">
+
+    <!-- Focus -->
+    <div class="edu-feature-card card scroll-reveal" data-reveal-delay="2">
+      <div class="edu-feature-top">
+        <span class="edu-feature-icon">⏱</span>
+        <span class="edu-feature-badge" id="edu-focus-badge">0 sessions today</span>
+      </div>
+      <h2 class="edu-feature-title">Focus</h2>
+      <p class="edu-feature-desc">Webcam-backed sessions that only count time when you're actually on task. Stay in the zone and build real study streaks.</p>
+      <p class="edu-feature-stat" id="edu-focus-stat">No sessions yet today — start one!</p>
+      <a href="{{ url_for('focus') }}" class="btn primary edu-feature-btn">Open Focus →</a>
+    </div>
+
+    <!-- Study -->
+    <div class="edu-feature-card card scroll-reveal" data-reveal-delay="3">
+      <div class="edu-feature-top">
+        <span class="edu-feature-icon">📚</span>
+        <span class="edu-feature-badge" id="edu-study-badge">0 cards saved</span>
+      </div>
+      <h2 class="edu-feature-title">Study</h2>
+      <p class="edu-feature-desc">Turn your notes into flashcards and quiz yourself before the next exam. Upload a PDF and let AI generate cards for you.</p>
+      <p class="edu-feature-stat" id="edu-study-stat">Upload notes to generate flashcards</p>
+      <a href="{{ url_for('study') }}" class="btn primary edu-feature-btn">Open Study →</a>
+    </div>
+
+    <!-- Grades -->
+    <div class="edu-feature-card card scroll-reveal" data-reveal-delay="4">
+      <div class="edu-feature-top">
+        <span class="edu-feature-icon">📊</span>
+        <span class="edu-feature-badge" id="edu-grades-badge">0 upcoming tests</span>
+      </div>
+      <h2 class="edu-feature-title">Grades</h2>
+      <p class="edu-feature-desc">Preview upcoming tests and figure out exactly what you need on assignments and finals to hit your target grade.</p>
+      <p class="edu-feature-stat" id="edu-grades-stat">Add assessments on your calendar</p>
+      <a href="{{ url_for('grades') }}" class="btn primary edu-feature-btn">Open Grades →</a>
+    </div>
+
+  </div>
 </div>
-</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar-events.js') }}"></script>
+<script src="{{ url_for('static', filename='js/education.js') }}"></script>
 {% endblock %}

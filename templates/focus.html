@@ -7,14 +7,34 @@
 
 <div class="focus-grid">
   <div class="card">
-    <h2>Focus Session</h2>
+    <div class="focus-header-row">
+      <h2>Focus Session</h2>
+      <label class="focus-mode-inline">Mode
+        <select id="focus-mode">
+          <option value="stopwatch">Stopwatch</option>
+          <option value="countdown">Countdown</option>
+        </select>
+      </label>
+    </div>
     <div id="timer" class="focus-timer-display">00:00</div>
     <p class="focus-elapsed-label">Session time</p>
     <div id="elapsed-timer" class="focus-elapsed-display">00:00</div>
+    <div class="focus-controls-row">
+      <label class="focus-countdown-label">Minutes
+        <input id="countdown-min" type="number" min="0" max="240" value="25">
+      </label>
+      <label class="focus-countdown-label">Seconds
+        <input id="countdown-sec" type="number" min="0" max="59" value="0">
+      </label>
+    </div>
+    <div id="countdown-result" class="focus-countdown-result" style="display:none">
+      Focused: <span id="countdown-percent">0%</span>
+    </div>
     <p id="timer-status" class="focus-timer-status">Turn on your webcam, then press Start.</p>
     <div class="hero-buttons">
-      <button class="btn primary" onclick="startTimer()">Start</button>
-      <button class="btn secondary" onclick="resetTimer()">Reset</button>
+      <button class="btn primary"   id="btn-start"   onclick="startTimer()">Start</button>
+      <button class="btn primary focus-end-btn hidden" id="btn-end" onclick="endSession()">End Session</button>
+      <button class="btn secondary" id="btn-reset"   onclick="resetTimer()">Reset</button>
     </div>
   </div>
 

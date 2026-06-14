@@ -15,46 +15,12 @@ let appData = {
 // ============ INITIALIZATION ============
 
 function initializeData() {
-  // Load data from localStorage
   const stored = localStorage.getItem(DATA_KEY);
   if (stored) {
     appData = JSON.parse(stored);
   } else {
-    // First time: seed fake 7-day history
-    seedFakeData();
+    saveData();
   }
-}
-
-function seedFakeData() {
-  const today = new Date();
-  
-  // Create 7 days of fake history
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = formatDate(date);
-
-    // Fake study sessions
-    const sessionCount = Math.floor(Math.random() * 4) + 2; // 2-5 sessions
-    for (let j = 0; j < sessionCount; j++) {
-      appData.sessions.push({
-        date: dateStr,
-        duration_minutes: 25 + Math.floor(Math.random() * 10), // 25-35 min
-        completed: true
-      });
-    }
-
-    // Fake daily log
-    appData.daily_logs.push({
-      date: dateStr,
-      water_glasses: 5 + Math.floor(Math.random() * 4), // 5-8
-      sleep_hours: 6 + Math.random() * 2, // 6-8 hours
-      mood: Math.floor(Math.random() * 3) + 3, // 3-5 mood
-      sessions_count: sessionCount
-    });
-  }
-
-  saveData();
 }
 
 function saveData() {

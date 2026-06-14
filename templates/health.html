@@ -39,11 +39,74 @@
     </div>
   </div>
 
+  <!-- Wellness Tips Card -->
+  <div class="health-card" id="tips-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('tips-card')" aria-expanded="false">
+      <span class="card-toggle-icon">🌟</span>
+      <span class="card-toggle-title">Wellness Tips</span>
+      <span class="card-toggle-summary" id="tips-card-summary">Powered by Gemini AI</span>
+      <span class="card-chevron">▸</span>
+    </button>
+    <div class="health-card-body hidden">
+      <div class="tips-header-row">
+        <p class="tips-intro">Personalized tips based on your data today.</p>
+        <button class="btn secondary tips-refresh-btn" id="tips-refresh-btn" onclick="Health.refreshTips(true)">↻ Refresh</button>
+      </div>
+      <div class="tips-list" id="tips-list">
+        <div class="tips-loading" id="tips-loading" style="display:none">
+          <div class="tips-spinner"></div>
+          <span>Generating tips…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mood Card -->
+  <div class="health-card" id="mood-card">
+    <button class="health-card-toggle" onclick="Health.toggleCard('mood-card')" aria-expanded="false">
+      <span class="card-toggle-icon">✨</span>
+      <span class="card-toggle-title">Mood Check-in</span>
+      <span class="card-toggle-summary" id="mood-card-summary">Powered by Anthropic AI</span>
+      <span class="card-chevron">▸</span>
+    </button>
+    <div class="health-card-body hidden">
+      <div class="mood-layout">
+
+        <div class="mood-chat" id="mood-chat">
+          <div class="mood-chat-messages" id="mood-chat-messages">
+            <div class="mood-msg mood-msg-bot">
+              <span class="mood-bot-avatar">✨</span>
+              <span class="mood-msg-text">Hey! Let's do a quick check-in. Press Start to begin.</span>
+            </div>
+          </div>
+          <div class="mood-chat-input-row" id="mood-chat-input-row" style="display:none">
+            <input type="text" id="mood-chat-input" class="mood-input" placeholder="Type your answer…" autocomplete="off">
+            <button class="btn primary mood-send-btn" onclick="Health.sendMoodAnswer()">Send</button>
+          </div>
+          <button class="btn primary mood-start-btn" id="mood-start-btn" onclick="Health.startMoodCheckin()">
+            Start Check-in
+          </button>
+        </div>
+
+        <div class="mood-result hidden" id="mood-result">
+          <div class="mood-result-emoji" id="mood-result-emoji">😐</div>
+          <div class="mood-result-label" id="mood-result-label">Neutral</div>
+          <div class="mood-result-summary" id="mood-result-summary"></div>
+          <div class="mood-score-bar-wrap">
+            <div class="mood-score-bar" id="mood-score-bar"></div>
+          </div>
+          <button class="btn secondary" onclick="Health.resetMood()">Check in again</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Sleep Card -->
   <div class="health-card" id="sleep-card">
     <button class="health-card-toggle" onclick="Health.toggleCard('sleep-card')" aria-expanded="true">
       <span class="card-toggle-icon">🌙</span>
-      <span class="card-toggle-title">Smart Sleep Scheduler</span>
+      <span class="card-toggle-title">Sleep Scheduler</span>
       <span class="card-toggle-summary" id="sleep-card-summary">Not logged yet</span>
       <span class="card-chevron">▾</span>
     </button>
@@ -71,7 +134,10 @@
 
         <div class="sleep-remind-panel">
           <h3 class="panel-label">Bedtime Target</h3>
-          <div class="bedtime-target-display" id="bedtime-target-display">10:30 PM</div>
+          <div class="time-input-group">
+            <label for="sleep-target-bedtime">Bedtime</label>
+            <input type="time" id="sleep-target-bedtime" class="bedtime-target-input" aria-label="Bedtime target">
+          </div>
           <div class="time-input-group">
             <label for="sleep-target-wake">Target wake time</label>
             <input type="time" id="sleep-target-wake" value="07:00" oninput="Health.updateBedtimeTarget()">
@@ -134,74 +200,16 @@
             <input type="number" id="water-goal-input" class="water-goal-input" min="4" max="20" value="8" oninput="Health.setWaterGoal(this.value)">
             <span>glasses</span>
           </div>
+          <div class="water-goal-row">
+            <label for="water-reminder-interval">Reminder interval (min)</label>
+            <input type="number" id="water-reminder-interval" class="water-reminder-interval" min="5" max="480" value="90" oninput="Health.setWaterReminderInterval(this.value)">
+            <span>minutes</span>
+          </div>
           <button class="btn secondary water-notify-btn" id="water-notify-btn" onclick="Health.scheduleWaterReminder()">
             🔔 Water reminders
           </button>
         </div>
 
-      </div>
-    </div>
-  </div>
-
-  <!-- Mood Card -->
-  <div class="health-card" id="mood-card">
-    <button class="health-card-toggle" onclick="Health.toggleCard('mood-card')" aria-expanded="false">
-      <span class="card-toggle-icon">✨</span>
-      <span class="card-toggle-title">Mood Check-in</span>
-      <span class="card-toggle-summary" id="mood-card-summary">How are you feeling?</span>
-      <span class="card-chevron">▸</span>
-    </button>
-    <div class="health-card-body hidden">
-      <div class="mood-layout">
-
-        <div class="mood-chat" id="mood-chat">
-          <div class="mood-chat-messages" id="mood-chat-messages">
-            <div class="mood-msg mood-msg-bot">
-              <span class="mood-bot-avatar">✨</span>
-              <span class="mood-msg-text">Hey! Let's do a quick check-in. Press Start to begin.</span>
-            </div>
-          </div>
-          <div class="mood-chat-input-row" id="mood-chat-input-row" style="display:none">
-            <input type="text" id="mood-chat-input" class="mood-input" placeholder="Type your answer…" autocomplete="off">
-            <button class="btn primary mood-send-btn" onclick="Health.sendMoodAnswer()">Send</button>
-          </div>
-          <button class="btn primary mood-start-btn" id="mood-start-btn" onclick="Health.startMoodCheckin()">
-            Start Check-in
-          </button>
-        </div>
-
-        <div class="mood-result hidden" id="mood-result">
-          <div class="mood-result-emoji" id="mood-result-emoji">😐</div>
-          <div class="mood-result-label" id="mood-result-label">Neutral</div>
-          <div class="mood-result-summary" id="mood-result-summary"></div>
-          <div class="mood-score-bar-wrap">
-            <div class="mood-score-bar" id="mood-score-bar"></div>
-          </div>
-          <button class="btn secondary" onclick="Health.resetMood()">Check in again</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Wellness Tips Card -->
-  <div class="health-card" id="tips-card">
-    <button class="health-card-toggle" onclick="Health.toggleCard('tips-card')" aria-expanded="false">
-      <span class="card-toggle-icon">🌟</span>
-      <span class="card-toggle-title">Wellness Tips</span>
-      <span class="card-toggle-summary" id="tips-card-summary">Powered by Gemini AI</span>
-      <span class="card-chevron">▸</span>
-    </button>
-    <div class="health-card-body hidden">
-      <div class="tips-header-row">
-        <p class="tips-intro">Personalized tips based on your data today.</p>
-        <button class="btn secondary tips-refresh-btn" id="tips-refresh-btn" onclick="Health.refreshTips(true)">↻ Refresh</button>
-      </div>
-      <div class="tips-list" id="tips-list">
-        <div class="tips-loading" id="tips-loading" style="display:none">
-          <div class="tips-spinner"></div>
-          <span>Generating tips…</span>
-        </div>
       </div>
     </div>
   </div>

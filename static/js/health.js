@@ -37,6 +37,13 @@ var Health = (function () {
     return (h % 12 || 12) + ':' + String(mn).padStart(2, '0') + ' ' + ampm;
   }
 
+  function minsToTimeValue(m) {
+    // return 24-hour HH:MM string for input[type=time]
+    var mm = ((m % 1440) + 1440) % 1440;
+    var h = Math.floor(mm / 60), mn = mm % 60;
+    return String(h).padStart(2, '0') + ':' + String(mn).padStart(2, '0');
+  }
+
   // ── Toast ────────────────────────────────────────────────────────────────
 
   function toast(msg, type) {
@@ -119,18 +126,28 @@ var Health = (function () {
   function updateBedtimeTarget() {
     var wakeInp = el('sleep-target-wake');
     var goalInp = el('sleep-goal-input');
-    var disp    = el('bedtime-target-display');
-    if (!wakeInp || !goalInp || !disp) return;
+    var bedInp  = el('sleep-target-bedtime');
+    if (!wakeInp || !goalInp || !bedInp) return;
     var wakeMins = timeToMins(wakeInp.value || '07:00');
     var goal     = parseFloat(goalInp.value) || 8;
-    disp.textContent = mins12(wakeMins - goal * 60);
+    // Only update the bedtime input automatically if user hasn't manually edited it
+    if (!bedInp.dataset.manual) {
+      var bedMins = ((wakeMins - goal * 60) + 1440) % 1440;
+      bedInp.value = minsToTimeValue(bedMins);
+    }
   }
 
   function scheduleBedtimeReminder() {
     if (!('Notification' in window)) { toast('Notifications not supported in this browser.', 'warn'); return; }
     var goal    = parseFloat((el('sleep-goal-input') || {}).value) || 8;
     var wakeStr = (el('sleep-target-wake') || {}).value || '07:00';
-    var bedMins = ((timeToMins(wakeStr) - goal * 60) + 1440) % 1440;
+    var bedInp  = el('sleep-target-bedtime');
+    var bedMins;
+    if (bedInp && bedInp.value) {
+      bedMins = timeToMins(bedInp.value);
+    } else {
+      bedMins = ((timeToMins(wakeStr) - goal * 60) + 1440) % 1440;
+    }
     var bedLabel = mins12(bedMins);
 
     Notification.requestPermission().then(function (perm) {
@@ -243,7 +260,9 @@ var Health = (function () {
 
   function getWaterData() {
     var d = load(STORE_WATER, {});
-    if (d.date !== todayStr()) return { date: todayStr(), glasses: 0, goal: d.goal || 8 };
+    // default structure with reminderInterval (minutes)
+    if (d.date !== todayStr()) return { date: todayStr(), glasses: 0, goal: d.goal || 8, reminderInterval: d.reminderInterval || 90 };
+    if (typeof d.reminderInterval === 'undefined') d.reminderInterval = 90;
     return d;
   }
 
@@ -263,33 +282,41 @@ var Health = (function () {
     save(STORE_WATER, data);
     renderWater();
   }
-
-  function scheduleWaterReminder() {
-    if (!('Notification' in window)) { toast('Notifications not supported.', 'warn'); return; }
-    Notification.requestPermission().then(function (perm) {
-      if (perm !== 'granted') { toast('Enable notifications in browser settings.', 'warn'); return; }
-      var count = 0;
-      var interval = 90 * 60 * 1000;
-      function schedNext() {
-        setTimeout(function () {
-          if (new Date().getHours() < 21) {
-            var data = getWaterData();
-            if (data.glasses < data.goal) {
-              new Notification('💧 Water Reminder', {
-                body: "You've had " + data.glasses + '/' + data.goal + ' glasses. Time to hydrate!',
-                icon: '/static/img/camera.svg',
-              });
-            }
-          }
-          if (++count < 8) schedNext();
-        }, interval);
-      }
-      schedNext();
-      var btn = el('water-notify-btn');
-      if (btn) btn.textContent = '✓ Reminders on (every 90 min)';
-      toast('Water reminders set every 90 minutes 💧', 'success');
-    });
+  function setWaterReminderInterval(val) {
+    var mins = Math.max(1, Math.min(1440, parseInt(val, 10) || 90));
+    var data = getWaterData();
+    data.reminderInterval = mins;
+    save(STORE_WATER, data);
+    renderWater();
   }
+
+
+function scheduleWaterReminder() {
+  if (!('Notification' in window)) { toast('Notifications not supported.', 'warn'); return; }
+  Notification.requestPermission().then(function (perm) {
+    if (perm !== 'granted') { toast('Enable notifications in browser settings.', 'warn'); return; }
+    var data = getWaterData();
+    var intervalMin = parseInt(data.reminderInterval || 90, 10) || 90;
+    var interval = Math.max(1, intervalMin) * 60 * 1000;
+    var count = 0;
+    function schedNext() {
+      setTimeout(function () {
+        var d = getWaterData();
+        if (d.glasses < d.goal) {
+          new Notification('💧 Water Reminder', {
+            body: "You've had " + d.glasses + '/' + d.goal + ' glasses. Time to hydrate!',
+            icon: '/static/img/camera.svg',
+          });
+        }
+        if (++count < 8) schedNext();
+      }, interval);
+    }
+    schedNext();
+    var btn = el('water-notify-btn');
+    if (btn) btn.textContent = '✓ Reminders on (every ' + intervalMin + ' min)';
+    toast('Water reminders set every ' + intervalMin + ' minutes 💧', 'success');
+  });
+}
 
   function renderWater() {
     var data = getWaterData();
@@ -648,11 +675,28 @@ var Health = (function () {
     renderMood();
     renderGlance();
 
+    // bedtime manual edit tracking: if user edits bedtime, mark it manual so auto-updates stop
+    var bedInp = el('sleep-target-bedtime');
+    if (bedInp) {
+      bedInp.addEventListener('input', function () { bedInp.dataset.manual = 'true'; });
+    }
+
     var moodInp = el('mood-chat-input');
     if (moodInp) {
       moodInp.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMoodAnswer(); }
       });
+    }
+
+    // Wire water reminder input -> save interval and notify button
+    var remInput = el('water-reminder-interval');
+    if (remInput) {
+      remInput.addEventListener('change', function () { setWaterReminderInterval(this.value); });
+      remInput.addEventListener('input', function () { /* live update if desired */ });
+    }
+    var waterBtn = el('water-notify-btn');
+    if (waterBtn) {
+      waterBtn.addEventListener('click', function () { scheduleWaterReminder(); });
     }
   }
 

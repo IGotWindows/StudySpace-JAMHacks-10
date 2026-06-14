@@ -42,6 +42,37 @@ function initCalendar() {
   let currentYear = initData.year;
   let currentMonth = initData.month;
   let selectedDay = null;
+  let gcalCache = loadGCalCache();
+
+  function getGCalMonthEvents() {
+    return gcalCache[getMonthKey(currentYear, currentMonth)] || {};
+  }
+
+  async function syncGCal(year, month, force = false) {
+    const url = getGCalUrl();
+    if (!url) return;
+    const key = getMonthKey(year, month);
+    if (!force && gcalCache[key]) return;
+    const statusEl = document.getElementById("gcal-sync-status");
+    if (statusEl) statusEl.textContent = "Syncing…";
+    try {
+      const resp = await fetch("/api/gcal/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, year, month }),
+      });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+      gcalCache[key] = data.events;
+      saveGCalCache(gcalCache);
+      renderCalendar();
+      if (selectedDay) renderPanelEvents();
+      if (statusEl) statusEl.textContent = "Synced";
+    } catch (e) {
+      if (statusEl) statusEl.textContent = "Sync failed";
+      console.error("GCal sync:", e.message);
+    }
+  }
 
   const monthLabel = document.getElementById("month-label");
   const dayPanel = document.getElementById("day-panel");
@@ -154,14 +185,17 @@ function initCalendar() {
           dayNumber.textContent = day;
           cell.appendChild(dayNumber);
 
-          const events = sortEvents(monthEvents[dayStr] || []);
+          const gcalDayEvts = getGCalMonthEvents()[dayStr] || [];
+          const events = sortEvents([...(monthEvents[dayStr] || []), ...gcalDayEvts]);
           if (events.length) {
             const list = document.createElement("ul");
             list.className = "day-events";
             events.slice(0, 2).forEach((event) => {
               const item = document.createElement("li");
               item.className = "day-event-item";
-              if (normalizeEvent(event).isAssessment) {
+              if (event.fromGCal) {
+                item.classList.add("day-event-gcal");
+              } else if (normalizeEvent(event).isAssessment) {
                 item.classList.add("day-event-assessment");
               }
               appendEventLabelElements(item, event);
@@ -190,8 +224,37 @@ function initCalendar() {
 
     const dayEvents = getSelectedDayEvents();
     const entries = getSortedDayEntries(dayEvents);
+    const gcalDayEvts = sortEvents(getGCalMonthEvents()[String(selectedDay)] || []);
 
-    noEventsMsg.classList.toggle("hidden", entries.length > 0);
+    noEventsMsg.classList.toggle("hidden", entries.length > 0 || gcalDayEvts.length > 0);
+
+    const gcalDaySection = document.getElementById("gcal-day-section");
+    const gcalDayList = document.getElementById("gcal-day-events-list");
+    if (gcalDaySection && gcalDayList) {
+      gcalDayList.innerHTML = "";
+      if (gcalDayEvts.length) {
+        gcalDaySection.classList.remove("hidden");
+        gcalDayEvts.forEach((event) => {
+          const normalized = normalizeEvent(event);
+          const item = document.createElement("li");
+          item.className = "panel-event-item panel-event-gcal";
+          const titleEl = document.createElement("span");
+          titleEl.className = "panel-event-gcal-title";
+          titleEl.textContent = normalized.title;
+          item.appendChild(titleEl);
+          const time = formatEventTime(normalized);
+          if (time) {
+            const timeEl = document.createElement("span");
+            timeEl.className = "panel-event-gcal-time";
+            timeEl.textContent = time;
+            item.appendChild(timeEl);
+          }
+          gcalDayList.appendChild(item);
+        });
+      } else {
+        gcalDaySection.classList.add("hidden");
+      }
+    }
 
     entries.forEach(({ event, originalIndex }) => {
       const normalized = normalizeEvent(event);
@@ -342,6 +405,65 @@ function initCalendar() {
     if (event.key === "Enter") addEvent();
   });
 
+  const setup = document.getElementById("gcal-setup");
+  const connected = document.getElementById("gcal-connected-row");
+  const badge = document.getElementById("gcal-badge");
+  const gcalConnectBtn = document.getElementById("gcal-connect-btn");
+  const gcalUrlInput = document.getElementById("gcal-url-input");
+  const gcalError = document.getElementById("gcal-error");
+  const gcalRefreshBtn = document.getElementById("gcal-refresh-btn");
+  const gcalDisconnectBtn = document.getElementById("gcal-disconnect-btn");
+
+  function updateGCalUI() {
+    const url = getGCalUrl();
+    const connectedState = Boolean(url);
+    if (connectedState) {
+      setup.classList.add("hidden");
+      connected.classList.remove("hidden");
+      badge.classList.remove("hidden");
+      gcalError.classList.add("hidden");
+      syncGCal(currentYear, currentMonth, true);
+    } else {
+      setup.classList.remove("hidden");
+      connected.classList.add("hidden");
+      badge.classList.add("hidden");
+    }
+  }
+
+  if (gcalConnectBtn) {
+    gcalConnectBtn.addEventListener("click", async () => {
+      const url = gcalUrlInput.value.trim();
+      gcalError.classList.add("hidden");
+      if (!url) {
+        gcalError.textContent = "Enter a Google Calendar iCal URL.";
+        gcalError.classList.remove("hidden");
+        return;
+      }
+      setGCalUrl(url);
+      updateGCalUI();
+    });
+  }
+
+  if (gcalRefreshBtn) {
+    gcalRefreshBtn.addEventListener("click", () => {
+      const key = getMonthKey(currentYear, currentMonth);
+      delete gcalCache[key];
+      syncGCal(currentYear, currentMonth, true);
+    });
+  }
+
+  if (gcalDisconnectBtn) {
+    gcalDisconnectBtn.addEventListener("click", () => {
+      setGCalUrl("");
+      gcalCache = {};
+      saveGCalCache(gcalCache);
+      updateGCalUI();
+      renderCalendar();
+      renderPanelEvents();
+    });
+  }
+
+  updateGCalUI();
   renderCalendar();
 }
 

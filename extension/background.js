@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:5000"; // Make sure to update this if your backend is running on a different port or domain
 
 // Track the widget window ID so we don't open duplicates
 let widgetWindowId = null;

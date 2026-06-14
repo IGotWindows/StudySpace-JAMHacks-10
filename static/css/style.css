@@ -2903,18 +2903,28 @@ input {
 
 .grades-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.grades-form-grid input,
+.grades-form-grid select,
+.grades-form-grid textarea {
+  min-width: 0;
 }
 
 .grades-form-grid .btn,
 .grades-full-col {
   grid-column: 1 / -1;
+  width: 100%;
 }
 
 .grades-form-compact {
   margin-top: 16px;
-  grid-template-columns: 1fr;
+}
+
+@media (max-width: 740px) {
+  .grades-form-grid { grid-template-columns: 1fr; }
 }
 
 .grades-field {

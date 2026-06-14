@@ -1,64 +1,129 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — Study Space{% endblock %}
+{% block title %}Dashboard — StudySpace{% endblock %}
 {% block content %}
-<div class="dashboard-layout">
-  <section class="dashboard-main">
-    <header class="dashboard-hero">
-      <div class="dashboard-title-box">
-        <h1>Your all in one Study Hub</h1>
+<div class="dash-v2">
+
+  <!-- ── PROFILE HEADER ── -->
+  <header class="dash-header scroll-reveal" data-reveal-delay="0">
+    <div class="dash-profile-group">
+      <button type="button" class="profile-avatar dash-avatar" id="profile-avatar-btn" aria-label="Change profile picture">
+        <img id="profile-picture" class="profile-picture hidden" alt="">
+        <span id="profile-placeholder" class="profile-placeholder" aria-hidden="true"></span>
+        <span class="profile-avatar-label">Change photo</span>
+      </button>
+      <input type="file" id="profile-picture-input" class="hidden" accept="image/*">
+      <div class="profile-details">
+        <p class="profile-hi">Hi, <span id="profile-first-name">there</span></p>
+        <p class="profile-full-name" id="profile-full-name">Your name</p>
       </div>
+    </div>
+    <p class="dash-date" id="dash-date"></p>
+  </header>
 
-      <div class="dashboard-profile-box">
-        <div class="dashboard-profile">
-          <button type="button" class="profile-avatar" id="profile-avatar-btn" aria-label="Change profile picture">
-            <img id="profile-picture" class="profile-picture hidden" alt="">
-            <span id="profile-placeholder" class="profile-placeholder" aria-hidden="true"></span>
-            <span class="profile-avatar-label">Change photo</span>
-          </button>
-          <input type="file" id="profile-picture-input" class="hidden" accept="image/*">
-
-          <div class="profile-details">
-            <p class="profile-hi">Hi, <span id="profile-first-name">there</span></p>
-            <p class="profile-full-name" id="profile-full-name">Your name</p>
-          </div>
+  <!-- ── FOCUS HERO ── -->
+  <section class="dash-focus-hero card scroll-reveal" data-reveal-delay="1" id="dash-focus-hero">
+    <div class="focus-hero-inner">
+      <div class="focus-hero-content">
+        <span class="focus-hero-badge" id="dash-focus-badge">FOCUS</span>
+        <h2 class="focus-hero-heading" id="dash-focus-heading">Ready to study?</h2>
+        <p class="focus-hero-sub" id="dash-focus-sub">Your webcam-backed focus session is just one click away.</p>
+        <a href="{{ url_for('focus') }}" class="btn primary focus-hero-cta" id="dash-focus-cta">
+          <img src="{{ url_for('static', filename='img/camera.svg') }}" class="focus-cta-btn-icon" alt="" aria-hidden="true">
+          Start Focusing Now
+        </a>
+      </div>
+      <div class="focus-hero-stats" id="dash-focus-stats">
+        <div class="focus-stat-item">
+          <span class="focus-stat-num" id="dash-today-sessions">0</span>
+          <span class="focus-stat-name">sessions today</span>
+        </div>
+        <div class="focus-stat-sep"></div>
+        <div class="focus-stat-item">
+          <span class="focus-stat-num" id="dash-today-minutes">0m</span>
+          <span class="focus-stat-name">focused today</span>
+        </div>
+        <div class="focus-stat-sep"></div>
+        <div class="focus-stat-item">
+          <span class="focus-stat-num" id="dash-last-session">—</span>
+          <span class="focus-stat-name">last session</span>
         </div>
       </div>
-    </header>
-
-    <div class="dashboard-section">
-      <div class="quick-links dashboard-links">
-        <a class="quick-link card scroll-reveal" href="{{ url_for('education') }}" data-reveal-delay="0">
-          <span class="quick-link-icon" aria-hidden="true">🚀</span>
-          <h3>Education</h3>
-          <p>Focus sessions, flashcards, and grade tools when you need to study.</p>
-        </a>
-        <a class="quick-link card scroll-reveal" href="{{ url_for('calendar_page') }}" data-reveal-delay="1">
-          <span class="quick-link-icon" aria-hidden="true">🪐</span>
-          <h3>Calendar</h3>
-          <p>Keep tests, assignments, and activities organized by day.</p>
-        </a>
-        <a class="quick-link card scroll-reveal" href="{{ url_for('health') }}" data-reveal-delay="2">
-          <span class="quick-link-icon" aria-hidden="true">🌙</span>
-          <h3>Health</h3>
-          <p>Log sleep, water, and mood — and spot patterns in your focus.</p>
-        </a>
-      </div>
     </div>
+    <div class="focus-orbit focus-orbit-1" aria-hidden="true"></div>
+    <div class="focus-orbit focus-orbit-2" aria-hidden="true"></div>
+    <div class="focus-orbit focus-orbit-3" aria-hidden="true"></div>
   </section>
 
-  <aside class="dashboard-sidebar">
-    <a class="focus-cta card scroll-reveal" href="{{ url_for('focus') }}" data-reveal-delay="1">
-      <img class="focus-cta-icon" src="{{ url_for('static', filename='img/camera.svg') }}" alt="">
-      <span class="focus-cta-label">Start Focusing Now!</span>
-    </a>
+  <!-- ── SUMMARY CARDS GRID ── -->
+  <div class="dash-summary-grid">
 
-    <div class="upcoming-sidebar card scroll-reveal" data-reveal-delay="2">
-      <h2 class="sidebar-title">This week</h2>
-      <ul id="upcoming-events-list" class="upcoming-events-list"></ul>
-      <p id="no-upcoming-events" class="no-upcoming-events hidden">Nothing scheduled this week. Add events on your calendar.</p>
-      <a class="btn secondary upcoming-calendar-link" href="{{ url_for('calendar_page') }}">Open Calendar</a>
+    <!-- EDUCATION -->
+    <div class="dash-summary-card card scroll-reveal" data-reveal-delay="2">
+      <div class="dash-card-top">
+        <span class="dash-card-icon" aria-hidden="true">🎓</span>
+        <h3 class="dash-card-title">Education</h3>
+        <a href="{{ url_for('education') }}" class="dash-card-more">Open →</a>
+      </div>
+
+      <div class="dash-block dash-quiz-block">
+        <span class="dash-block-label">Pop Quiz</span>
+        <p class="dash-quiz-q" id="dash-quiz-q">No flashcards yet — visit Study to create some.</p>
+        <button type="button" class="dash-reveal-btn hidden" id="dash-quiz-reveal">Reveal answer</button>
+        <p class="dash-quiz-a hidden" id="dash-quiz-a"></p>
+      </div>
+
+      <div class="dash-block">
+        <span class="dash-block-label">Upcoming Assessments</span>
+        <ul class="dash-mini-list" id="dash-assessments-list"></ul>
+        <p class="dash-fallback hidden" id="dash-no-assessments">No upcoming assessments.</p>
+      </div>
     </div>
-  </aside>
+
+    <!-- CALENDAR -->
+    <div class="dash-summary-card card scroll-reveal" data-reveal-delay="3">
+      <div class="dash-card-top">
+        <span class="dash-card-icon" aria-hidden="true">📅</span>
+        <h3 class="dash-card-title">This Week</h3>
+        <a href="{{ url_for('calendar_page') }}" class="dash-card-more">Open →</a>
+      </div>
+      <ul id="upcoming-events-list" class="upcoming-events-list dash-events-list"></ul>
+      <p id="no-upcoming-events" class="no-upcoming-events hidden">Nothing scheduled this week. Add events on your calendar.</p>
+      <a class="btn secondary dash-open-btn" href="{{ url_for('calendar_page') }}">Open Calendar</a>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="dash-summary-card card scroll-reveal" data-reveal-delay="4">
+      <div class="dash-card-top">
+        <span class="dash-card-icon" aria-hidden="true">💚</span>
+        <h3 class="dash-card-title">Health</h3>
+        <a href="{{ url_for('health') }}" class="dash-card-more">Open →</a>
+      </div>
+
+      <div class="dash-mood-row">
+        <span class="dash-mood-emoji" id="dash-mood-emoji">✨</span>
+        <div class="dash-mood-text">
+          <p class="dash-mood-label" id="dash-mood-label">No check-in yet today.</p>
+          <p class="dash-mood-sub" id="dash-mood-sub"></p>
+        </div>
+      </div>
+
+      <div class="dash-vitals-row">
+        <div class="dash-vital">
+          <span class="dash-vital-icon">💧</span>
+          <span class="dash-vital-val" id="dash-water-val">—</span>
+          <span class="dash-vital-lbl">water</span>
+        </div>
+        <div class="dash-vital">
+          <span class="dash-vital-icon">🌙</span>
+          <span class="dash-vital-val" id="dash-sleep-val">—</span>
+          <span class="dash-vital-lbl">sleep</span>
+        </div>
+      </div>
+
+      <a class="btn secondary dash-open-btn" href="{{ url_for('health') }}">Check In</a>
+    </div>
+
+  </div>
 </div>
 
 <script id="calendar-init-data" type="application/json">{{ calendar_json|safe }}</script>
